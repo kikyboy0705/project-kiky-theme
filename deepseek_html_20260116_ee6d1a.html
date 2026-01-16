@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Kiky - Theme Inspector</title>
+    <meta name="description" content="Interactive CSS Theme Inspector for Project Kiky - Preview colors, components, and toggle between light/dark modes">
+    <meta name="keywords" content="CSS, Theme, Design System, UI Components, Project Kiky">
+    <meta name="author" content="Project Kiky Team">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Project Kiky - Theme Inspector">
+    <meta property="og:description" content="Interactive CSS Theme Inspector for Project Kiky">
+    <meta property="og:image" content="https://i.imgur.com/placeholder.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Project Kiky - Theme Inspector">
+    <meta name="twitter:description" content="Interactive CSS Theme Inspector for Project Kiky">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎨</text></svg>">
+    
+    <!-- CDN Links -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Tema Project Kiky */
+        :root {
+          --font-size: 16px;
+          --background: #ffffff;
+          --foreground: #030213;
+          --card: #ffffff;
+          --card-foreground: #030213;
+          --primary: #1E40AF;
+          --primary-foreground: #ffffff;
+          --primary-light: #3B82F6;
+          --primary-lighter: #BFDBFE;
+          --primary-lightest: #DBEAFE;
+          --secondary: #f1f5f9;
+          --secondary-foreground: #030213;
+          --muted: #ececf0;
+          --muted-foreground: #717182;
+          --accent: #e9ebef;
+          --accent-foreground: #030213;
+          --destructive: #d4183d;
+          --destructive-foreground: #ffffff;
+          --border: rgba(0, 0, 0, 0.1);
+          --input-background: #f3f3f5;
+          --switch-background: #cbced4;
+          --ring: rgba(0, 0, 0, 0.1);
+          --chart-1: #f59e0b;
+          --chart-2: #10b981;
+          --chart-3: #3b82f6;
+          --chart-4: #8b5cf6;
+          --chart-5: #ef4444;
+          --radius: 0.625rem;
+        }
+
+        .dark {
+          --background: #030213;
+          --foreground: #ffffff;
+          --card: #030213;
+          --card-foreground: #ffffff;
+          --primary: #ffffff;
+          --primary-foreground: #030213;
+          --secondary: #1e293b;
+          --secondary-foreground: #ffffff;
+          --muted: #1e293b;
+          --muted-foreground: #94a3b8;
+          --accent: #1e293b;
+          --accent-foreground: #ffffff;
+          --border: rgba(255, 255, 255, 0.1);
+          --input-background: #0f172a;
+          --switch-background: #475569;
+          --ring: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+          border-color: var(--border);
+          outline-color: var(--ring);
+        }
+
+        body {
+          background-color: var(--background);
+          color: var(--foreground);
+          font-size: var(--font-size);
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          transition: background-color 0.3s, color 0.3s;
+        }
+
+        .card {
+          background-color: var(--card);
+          color: var(--card-foreground);
+          border-radius: var(--radius);
+          border: 1px solid var(--border);
+          padding: 1.5rem;
+          transition: all 0.3s;
+        }
+
+        .btn-primary {
+          background-color: var(--primary);
+          color: var(--primary-foreground);
+          border-radius: var(--radius);
+          padding: 0.5rem 1rem;
+          font-weight: 500;
+          transition: all 0.2s;
+          cursor: pointer;
+          border: none;
+        }
+
+        .btn-primary:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
+        }
+
+        .theme-toggle {
+          background-color: var(--switch-background);
+          border-radius: 9999px;
+          width: 3rem;
+          height: 1.5rem;
+          position: relative;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+
+        .theme-toggle::after {
+          content: '';
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          width: 1.25rem;
+          height: 1.25rem;
+          background-color: white;
+          border-radius: 9999px;
+          transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .dark .theme-toggle::after {
+          transform: translateX(1.5rem);
+          background-color: var(--primary);
+        }
+
+        .click-feedback {
+          animation: click-pulse 0.3s ease;
+        }
+
+        @keyframes click-pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(0.95); }
+          100% { transform: scale(1); }
+        }
+
+        .toast-show {
+          animation: toast-slide 0.3s ease;
+        }
+
+        @keyframes toast-slide {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto p-4 md:p-6">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold" data-i18n="title">🎨 Project Kiky - Theme Inspector</h1>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1" data-i18n="subtitle">
+                        Interactive CSS theme inspection tool - Click everything!
+                    </p>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Language Switcher -->
+                    <div class="relative">
+                        <button id="languageToggle" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                            <i class="fas fa-globe"></i>
+                            <span id="currentLanguage">🇮🇩 ID</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div id="languageDropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 hidden z-50">
+                            <button onclick="changeLanguage('id')" class="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg flex items-center gap-3">
+                                <span>🇮🇩</span>
+                                <span>Bahasa Indonesia</span>
+                            </button>
+                            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg flex items-center gap-3">
+                                <span>🇺🇸</span>
+                                <span>English</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Theme Toggle -->
+                    <div class="flex items-center gap-3">
+                        <div class="theme-toggle" id="themeToggle"></div>
+                        <span id="themeLabel" data-i18n="darkMode">Dark Mode</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="colorsCount">Color Variables</p>
+                        <h3 class="text-2xl font-bold">24</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                        <i class="fas fa-palette text-blue-600 dark:text-blue-300"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="componentsCount">UI Components</p>
+                        <h3 class="text-2xl font-bold">12</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                        <i class="fas fa-cube text-green-600 dark:text-green-300"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="interactiveCount">Interactive Elements</p>
+                        <h3 class="text-2xl font-bold">45+</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+                        <i class="fas fa-mouse-pointer text-purple-600 dark:text-purple-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Color Palette -->
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4" data-i18n="colorPalette">Color Palette</h2>
+                <div class="space-y-4">
+                    <div>
+                        <p class="font-medium mb-2" data-i18n="primaryColors">Primary Colors</p>
+                        <div class="flex gap-2">
+                            <div class="w-12 h-12 rounded cursor-pointer" style="background-color: var(--primary)" onclick="copyColor('primary')"></div>
+                            <div class="w-12 h-12 rounded cursor-pointer" style="background-color: var(--primary-light)" onclick="copyColor('primary-light')"></div>
+                            <div class="w-12 h-12 rounded cursor-pointer" style="background-color: var(--primary-lighter)" onclick="copyColor('primary-lighter')"></div>
+                            <div class="w-12 h-12 rounded cursor-pointer" style="background-color: var(--primary-lightest)" onclick="copyColor('primary-lightest')"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <p class="font-medium mb-2" data-i18n="semanticColors">Semantic Colors</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="h-8 rounded cursor-pointer" style="background-color: var(--background)" onclick="copyColor('background')"></div>
+                            <div class="h-8 rounded cursor-pointer" style="background-color: var(--foreground)" onclick="copyColor('foreground')"></div>
+                            <div class="h-8 rounded cursor-pointer" style="background-color: var(--card)" onclick="copyColor('card')"></div>
+                            <div class="h-8 rounded cursor-pointer" style="background-color: var(--muted)" onclick="copyColor('muted')"></div>
+                            <div class="h-8 rounded cursor-pointer" style="background-color: var(--accent)" onclick="copyColor('accent')"></div>
+                            <div class="h-8 rounded cursor-pointer" style="background-color: var(--destructive)" onclick="copyColor('destructive')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Components Demo -->
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4" data-i18n="componentsDemo">Components Demo</h2>
+                <div class="space-y-4">
+                    <div class="flex flex-wrap gap-2">
+                        <button class="btn-primary" onclick="showToast('primaryButton')" data-i18n="primaryButton">
+                            Primary Button
+                        </button>
+                        <button class="px-4 py-2 rounded-lg font-medium" style="background-color: var(--secondary); color: var(--secondary-foreground)" onclick="showToast('secondaryButton')" data-i18n="secondaryButton">
+                            Secondary Button
+                        </button>
+                        <button class="px-4 py-2 rounded-lg font-medium" style="background-color: var(--destructive); color: var(--destructive-foreground)" onclick="showToast('destructiveButton')" data-i18n="destructiveButton">
+                            Destructive Button
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2" data-i18n="inputLabel">Input Field</label>
+                        <input type="text" class="w-full px-3 py-2 rounded-lg border" style="background-color: var(--input-background); border-color: var(--border)" placeholder="Type something..." data-i18n-placeholder="inputPlaceholder">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2" data-i18n="selectLabel">Select Dropdown</label>
+                        <select class="w-full px-3 py-2 rounded-lg border" style="background-color: var(--input-background); border-color: var(--border)">
+                            <option data-i18n="option1">Option 1</option>
+                            <option data-i18n="option2">Option 2</option>
+                            <option data-i18n="option3">Option 3</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Test Area -->
+        <div class="card mb-8">
+            <h2 class="text-xl font-bold mb-4" data-i18n="interactiveTest">Interactive Test Area</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <p class="mb-4" data-i18n="clickInstructions">Click on any element below to test interactivity:</p>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="h-16 rounded-lg cursor-pointer flex items-center justify-center card" onclick="showToast('cardClick')">
+                            <i class="fas fa-square text-lg"></i>
+                        </div>
+                        <div class="h-16 rounded-lg cursor-pointer flex items-center justify-center" style="background-color: var(--chart-1)" onclick="showToast('chart1Click')">
+                            <i class="fas fa-chart-bar text-white"></i>
+                        </div>
+                        <div class="h-16 rounded-lg cursor-pointer flex items-center justify-center" style="background-color: var(--chart-2)" onclick="showToast('chart2Click')">
+                            <i class="fas fa-chart-line text-white"></i>
+                        </div>
+                        <div class="h-16 rounded-lg cursor-pointer flex items-center justify-center" style="background-color: var(--chart-3)" onclick="showToast('chart3Click')">
+                            <i class="fas fa-chart-pie text-white"></i>
+                        </div>
+                        <div class="h-16 rounded-lg cursor-pointer flex items-center justify-center" style="background-color: var(--chart-4)" onclick="showToast('chart4Click')">
+                            <i class="fas fa-chart-area text-white"></i>
+                        </div>
+                        <div class="h-16 rounded-lg cursor-pointer flex items-center justify-center" style="background-color: var(--chart-5)" onclick="showToast('chart5Click')">
+                            <i class="fas fa-chart-simple text-white"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <p class="mb-4" data-i18n="testAllText">Test all components at once:</p>
+                    <button onclick="testAllComponents()" class="w-full py-3 rounded-lg font-medium flex items-center justify-center gap-2" style="background-color: var(--primary); color: var(--primary-foreground)">
+                        <i class="fas fa-play"></i>
+                        <span data-i18n="testAllButton">Test All Components</span>
+                    </button>
+                    
+                    <div class="mt-6">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2" data-i18n="radiusDemo">Border Radius Demo</p>
+                        <div class="flex gap-4">
+                            <div class="w-16 h-16 cursor-pointer" style="background-color: var(--primary); border-radius: calc(var(--radius) - 4px)" onclick="showRadius('sm')"></div>
+                            <div class="w-16 h-16 cursor-pointer" style="background-color: var(--primary); border-radius: calc(var(--radius) - 2px)" onclick="showRadius('md')"></div>
+                            <div class="w-16 h-16 cursor-pointer" style="background-color: var(--primary); border-radius: var(--radius)" onclick="showRadius('lg')"></div>
+                            <div class="w-16 h-16 cursor-pointer" style="background-color: var(--primary); border-radius: calc(var(--radius) + 4px)" onclick="showRadius('xl')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 pt-6 border-t" style="border-color: var(--border)">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="footerText">
+                        Project Kiky Theme Inspector • All rights reserved • Click everything!
+                    </p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="text-sm px-3 py-1 rounded" style="background-color: var(--accent)" data-i18n="toggleTheme">
+                        Toggle Theme
+                    </button>
+                    <button onclick="location.reload()" class="text-sm px-3 py-1 rounded" style="background-color: var(--accent)" data-i18n="refreshPage">
+                        Refresh Page
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 max-w-sm w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 transform translate-y-full transition-transform duration-300">
+        <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: var(--primary); color: var(--primary-foreground)">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="flex-1">
+                <p class="font-medium" id="toastTitle"></p>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1" id="toastMessage"></p>
+            </div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // TRANSLATIONS
+        // ============================================
+        const translations = {
+            id: {
+                title: "🎨 Project Kiky - Theme Inspector",
+                subtitle: "Alat inspeksi tema CSS interaktif - Klik semuanya!",
+                darkMode: "Mode Gelap",
+                colorsCount: "Variabel Warna",
+                componentsCount: "Komponen UI",
+                interactiveCount: "Elemen Interaktif",
+                colorPalette: "Palet Warna",
+                primaryColors: "Warna Primer",
+                semanticColors: "Warna Semantik",
+                componentsDemo: "Demo Komponen",
+                primaryButton: "Tombol Primer",
+                secondaryButton: "Tombol Sekunder",
+                destructiveButton: "Tombol Destruktif",
+                inputLabel: "Field Input",
+                inputPlaceholder: "Ketik sesuatu...",
+                selectLabel: "Dropdown Select",
+                option1: "Pilihan 1",
+                option2: "Pilihan 2",
+                option3: "Pilihan 3",
+                interactiveTest: "Area Tes Interaktif",
+                clickInstructions: "Klik elemen di bawah untuk menguji interaktivitas:",
+                testAllText: "Tes semua komponen sekaligus:",
+                testAllButton: "Tes Semua Komponen",
+                radiusDemo: "Demo Border Radius",
+                footerText: "Project Kiky Theme Inspector • Hak cipta dilindungi • Klik semuanya!",
+                toggleTheme: "Ganti Tema",
+                refreshPage: "Muat Ulang",
+                
+                // Toast messages
+                colorCopied: "Warna Disalin",
+                themeChanged: "Tema Diubah",
+                languageChanged: "Bahasa Diubah",
+                componentTested: "Komponen Diuji",
+                allComponentsTested: "Semua Komponen Diuji",
+                cardClicked: "Card Diklik",
+                chartClicked: "Chart Diklik",
+                radiusClicked: "Radius Diklik"
+            },
+            en: {
+                title: "🎨 Project Kiky - Theme Inspector",
+                subtitle: "Interactive CSS theme inspection tool - Click everything!",
+                darkMode: "Dark Mode",
+                colorsCount: "Color Variables",
+                componentsCount: "UI Components",
+                interactiveCount: "Interactive Elements",
+                colorPalette: "Color Palette",
+                primaryColors: "Primary Colors",
+                semanticColors: "Semantic Colors",
+                componentsDemo: "Components Demo",
+                primaryButton: "Primary Button",
+                secondaryButton: "Secondary Button",
+                destructiveButton: "Destructive Button",
+                inputLabel: "Input Field",
+                inputPlaceholder: "Type something...",
+                selectLabel: "Select Dropdown",
+                option1: "Option 1",
+                option2: "Option 2",
+                option3: "Option 3",
+                interactiveTest: "Interactive Test Area",
+                clickInstructions: "Click on any element below to test interactivity:",
+                testAllText: "Test all components at once:",
+                testAllButton: "Test All Components",
+                radiusDemo: "Border Radius Demo",
+                footerText: "Project Kiky Theme Inspector • All rights reserved • Click everything!",
+                toggleTheme: "Toggle Theme",
+                refreshPage: "Refresh Page",
+                
+                // Toast messages
+                colorCopied: "Color Copied",
+                themeChanged: "Theme Changed",
+                languageChanged: "Language Changed",
+                componentTested: "Component Tested",
+                allComponentsTested: "All Components Tested",
+                cardClicked: "Card Clicked",
+                chartClicked: "Chart Clicked",
+                radiusClicked: "Radius Clicked"
+            }
+        };
+
+        // ============================================
+        // CORE FUNCTIONS
+        // ============================================
+        let currentLang = 'id';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+            
+            // Update language button
+            document.getElementById('currentLanguage').textContent = 
+                lang === 'id' ? '🇮🇩 ID' : '🇺🇸 EN';
+            
+            // Update theme label
+            updateThemeLabel();
+            
+            // Show toast
+            showToast(
+                translations[lang]['languageChanged'],
+                lang === 'id' ? 'Bahasa diubah ke Indonesia' : 'Language changed to English'
+            );
+            
+            // Close dropdown
+            document.getElementById('languageDropdown').classList.add('hidden');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            
+            if (isDark) {
+                html.classList.remove('dark');
+                showToast(
+                    translations[currentLang]['themeChanged'],
+                    currentLang === 'id' ? 'Mode terang diaktifkan' : 'Light mode activated'
+                );
+            } else {
+                html.classList.add('dark');
+                showToast(
+                    translations[currentLang]['themeChanged'],
+                    currentLang === 'id' ? 'Mode gelap diaktifkan' : 'Dark mode activated'
+                );
+            }
+            
+            updateThemeLabel();
+            
+            // Add click feedback to toggle
+            document.getElementById('themeToggle').classList.add('click-feedback');
+            setTimeout(() => {
+                document.getElementById('themeToggle').classList.remove('click-feedback');
+            }, 300);
+        }
+
+        function updateThemeLabel() {
+            const label = document.getElementById('themeLabel');
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            if (currentLang === 'id') {
+                label.textContent = isDark ? 'Mode Gelap' : 'Mode Terang';
+            } else {
+                label.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+            }
+        }
+
+        function copyColor(colorName) {
+            const color = getComputedStyle(document.documentElement).getPropertyValue(`--${colorName}`);
+            navigator.clipboard.writeText(color).then(() => {
+                showToast(
+                    translations[currentLang]['colorCopied'],
+                    `${colorName}: ${color}`
+                );
+            });
+            
+            // Add click feedback
+            event.target.classList.add('click-feedback');
+            setTimeout(() => {
+                event.target.classList.remove('click-feedback');
+            }, 300);
+        }
+
+        function showToast(titleKey, message) {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastTitle.textContent = translations[currentLang][titleKey] || titleKey;
+            toastMessage.textContent = message;
+            
+            // Show toast
+            toast.classList.remove('translate-y-full');
+            toast.classList.add('toast-show');
+            
+            // Auto hide after 3 seconds
+            setTimeout(hideToast, 3000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('translate-y-full');
+            toast.classList.remove('toast-show');
+        }
+
+        function testAllComponents() {
+            // Show initial toast
+            showToast(
+                translations[currentLang]['allComponentsTested'],
+                currentLang === 'id' ? 'Menguji semua komponen...' : 'Testing all components...'
+            );
+            
+            // Add click feedback to all interactive elements
+            const elements = document.querySelectorAll('button, .card, [onclick]');
+            elements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.classList.add('click-feedback');
+                    setTimeout(() => {
+                        el.classList.remove('click-feedback');
+                    }, 300);
+                }, index * 50);
+            });
+        }
+
+        function showRadius(size) {
+            const sizes = {
+                sm: 'Small',
+                md: 'Medium',
+                lg: 'Large',
+                xl: 'Extra Large'
+            };
+            
+            showToast(
+                translations[currentLang]['radiusClicked'],
+                `${sizes[size]} radius clicked`
+            );
+            
+            event.target.classList.add('click-feedback');
+            setTimeout(() => {
+                event.target.classList.remove('click-feedback');
+            }, 300);
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // Language dropdown
+            document.getElementById('languageToggle').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('languageDropdown').classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                const dropdown = document.getElementById('languageDropdown');
+                const toggle = document.getElementById('languageToggle');
+                
+                if (!dropdown.contains(e.target) && !toggle.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+            
+            // Initialize with Indonesian
+            changeLanguage('id');
+            
+            // Show welcome message
+            setTimeout(() => {
+                showToast(
+                    currentLang === 'id' ? 'Selamat Datang' : 'Welcome',
+                    currentLang === 'id' ? 'Klik elemen apa saja untuk mulai!' : 'Click any element to get started!'
+                );
+            }, 1000);
+            
+            // Log for debugging
+            console.log('🎨 Project Kiky Theme Inspector loaded successfully!');
+            console.log('✨ All elements are interactive and clickable!');
+        });
+
+        // Handle click feedback for all interactive elements
+        document.addEventListener('click', function(e) {
+            if (e.target.onclick || e.target.closest('[onclick]')) {
+                const element = e.target.closest('[onclick]') || e.target;
+                if (!element.classList.contains('theme-toggle')) {
+                    element.classList.add('click-feedback');
+                    setTimeout(() => {
+                        element.classList.remove('click-feedback');
+                    }, 300);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
